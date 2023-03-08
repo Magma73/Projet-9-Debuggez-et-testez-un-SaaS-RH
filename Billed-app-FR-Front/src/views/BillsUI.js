@@ -20,11 +20,38 @@ const row = (bill) => {
   }
 
 const rows = (data) => {
-  if (!data || data.length === 0) return ""
-  const antiChrono = (a, b) => b.date.localeCompare(a.date)
-  const dates = [...data].sort(antiChrono)
-  return dates.map(bill => row(bill)).join("")
-}
+  if (!data || data.length === 0) return "";
+
+  const dateOriginal = data[0].originalDate
+
+  // Je teste si le tableau contient la variable originalDate sinon j'utilise date (pour tester les données mockées)
+  if (dateOriginal === undefined) {
+    const sortedData = data.sort((a, b) => {
+      if (a.date > b.date) {
+        return -1;
+      }
+      if (a.date < b.date) {
+        return 1;
+      }
+      return 0;
+    });
+    return sortedData.map(bill => row(bill)).join("");
+
+  } else if (dateOriginal !== undefined) {
+    const sortedData = data.sort((a, b) => {
+      if (a.originalDate > b.originalDate) {
+        return -1;
+      }
+      if (a.originalDate < b.originalDate) {
+        return 1;
+      }
+      return 0;
+    });
+    return sortedData.map(bill => row(bill)).join("");
+  }
+};
+
+
 
 export default ({ data: bills, loading, error }) => {
 
