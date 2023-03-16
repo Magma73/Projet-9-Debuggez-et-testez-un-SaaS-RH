@@ -1,6 +1,8 @@
 import VerticalLayout from './VerticalLayout.js'
 import ErrorPage from "./ErrorPage.js"
 import LoadingPage from "./LoadingPage.js"
+import Bills from "../containers/Bills.js"
+import { formatDate, formatStatus } from "../app/format.js"
 
 import Actions from './Actions.js'
 
@@ -9,7 +11,7 @@ const row = (bill) => {
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td>${bill.date}</td>
+      <td>${bill.formatedDate || bill.date}</td>
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
@@ -20,38 +22,15 @@ const row = (bill) => {
   }
 
 const rows = (data) => {
-  if (!data || data.length === 0) return "";
-
-  const dateOriginal = data[0].originalDate
-
-  // Je teste si le tableau contient la variable originalDate sinon j'utilise date (pour tester les données mockées)
-  if (dateOriginal === undefined) {
-    const sortedData = data.sort((a, b) => {
-      if (a.date > b.date) {
-        return -1;
-      }
-      if (a.date < b.date) {
-        return 1;
-      }
-      return 0;
-    });
-    return sortedData.map(bill => row(bill)).join("");
-
-  } else if (dateOriginal !== undefined) {
-    const sortedData = data.sort((a, b) => {
-      if (a.originalDate > b.originalDate) {
-        return -1;
-      }
-      if (a.originalDate < b.originalDate) {
-        return 1;
-      }
-      return 0;
-    });
-    return sortedData.map(bill => row(bill)).join("");
-  }
-};
-
-
+  return (data && data.length)
+  ? [...data]
+    .sort((a, b) => {
+      return new Date(b.date) - new Date(a.date)
+    })
+    .map(bill => row(bill))
+    .join("")
+  : ""
+}
 
 export default ({ data: bills, loading, error }) => {
 
