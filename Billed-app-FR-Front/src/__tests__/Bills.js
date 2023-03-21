@@ -3,17 +3,15 @@
  */
 // debugger;
 
-import { fireEvent, getAllByTestId, getByTestId, getByClassName, screen, waitFor } from "@testing-library/dom";
+import { screen, waitFor } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 import BillsUI from "../views/BillsUI.js";
-import { bills } from "../fixtures/bills.js";
-// import { ROUTES_PATH} from "../constants/routes.js"
-import { ROUTES, ROUTES_PATH } from "../constants/routes";
+import Bills from "../containers/Bills.js";
+import { ROUTES_PATH } from "../constants/routes";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store";
 
 import router from "../app/Router.js";
-import Bills from "../containers/Bills.js";
 
 jest.mock("../app/store", () => mockStore);
 
@@ -47,7 +45,7 @@ describe("Given I am connected as an employee", () => {
          const firstEye = eye[0];
          $.fn.modal = jest.fn();
 
-         userEvent.click(firstEye)
+         userEvent.click(firstEye);
 
          const dialog = await screen.findByRole("dialog", { hidden: true });
          expect(dialog).toBeTruthy();
@@ -61,7 +59,7 @@ describe("Given I am connected as an employee", () => {
          userEvent.click(btn);
          expect(await screen.findByText("Envoyer une note de frais")).toBeTruthy();
       });
-      test("Then bill icon in vertical layout should be highlighted", async () => {
+      test("Then mail icon in vertical layout should be highlighted", async () => {
          document.location = "/#employee/bill/new";
          await router();
          await waitFor(() => screen.getByTestId("icon-mail"));
@@ -74,23 +72,18 @@ describe("Given I am connected as an employee", () => {
 // test d'intégration GET
 describe("Given I am a user connected as an employee", () => {
    describe("WWhen I am on Bills page", () => {
-      test("Then bills data should be returned and displayed", async () => {
+      test("Then fetches bills from mock API GET", async () => {
          const root = document.createElement("div");
          root.setAttribute("id", "root");
          document.body.append(root);
          router();
          window.onNavigate(ROUTES_PATH.Bills);
 
-         // console.log(router())
-
-         const dataMocked = jest.spyOn(mockStore.bills(), "list");
+         const dataMocked = jest.spyOn(mockStore.bills(), "list")
          mockStore.bills().list();
-
-         // screen.debug()
 
          await waitFor(() => {
             expect(dataMocked).toHaveBeenCalledTimes(1);
-            expect(bills.length).toBe(4);
             expect(document.querySelectorAll("tbody tr").length).toBe(4);
             expect(screen.findByText("Mes notes de frais")).toBeTruthy();
          });
@@ -112,34 +105,34 @@ describe("Given I am a user connected as an employee", () => {
             document.body.appendChild(root);
             router();
          });
-       test("fetches bills from an API and fails with 404 message error", async () => {
-         mockStore.bills.mockImplementationOnce(() => {
-             return {
-                list: () => {
-                   return Promise.reject(new Error("Erreur 404"));
-                },
-             };
-          });
-          window.onNavigate(ROUTES_PATH.Bills);
-          await new Promise(process.nextTick);
-          const message = await screen.getByText(/Erreur 404/);
-          expect(message).toBeTruthy();
-       });
+         test("Then fetches bills from an API and fails with 404 message error", async () => {
+            mockStore.bills.mockImplementationOnce(() => {
+               return {
+                  list: () => {
+                     return Promise.reject(new Error("Erreur 404"));
+                  },
+               };
+            });
+            window.onNavigate(ROUTES_PATH.Bills);
+            await new Promise(process.nextTick);
+            const message = await screen.getByText(/Erreur 404/);
+            expect(message).toBeTruthy();
+         });
 
-       test("fetches messages from an API and fails with 500 message error", async () => {
-          mockStore.bills.mockImplementationOnce(() => {
-             return {
-                list: () => {
-                   return Promise.reject(new Error("Erreur 500"));
-                },
-             };
-          });
+         test("Then fetches messages from an API and fails with 500 message error", async () => {
+            mockStore.bills.mockImplementationOnce(() => {
+               return {
+                  list: () => {
+                     return Promise.reject(new Error("Erreur 500"));
+                  },
+               };
+            });
 
-          window.onNavigate(ROUTES_PATH.Bills);
-          await new Promise(process.nextTick);
-          const message = await screen.getByText(/Erreur 500/);
-          expect(message).toBeTruthy();
-       });
+            window.onNavigate(ROUTES_PATH.Bills);
+            await new Promise(process.nextTick);
+            const message = await screen.getByText(/Erreur 500/);
+            expect(message).toBeTruthy();
+         });
       });
    });
 });
