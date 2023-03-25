@@ -6,7 +6,7 @@
 import { screen, waitFor } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 import BillsUI from "../views/BillsUI.js";
-import Bills from "../containers/Bills.js";
+// import Bills from "../containers/Bills.js";
 import { ROUTES_PATH } from "../constants/routes";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store";
@@ -15,7 +15,7 @@ import router from "../app/Router.js";
 
 jest.mock("../app/store", () => mockStore);
 
-beforeEach(() => {
+beforeAll(() => {
    Object.defineProperty(window, "localStorage", { value: localStorageMock });
    window.localStorage.setItem(
       "user",
@@ -39,7 +39,6 @@ afterEach(() => {
 describe("Given I am connected as an employee", () => {
    describe("When I am on Bills page, I click on the icon eye", () => {
       test("Then a modal should appear", async () => {
-         await waitFor(() => screen.getAllByTestId("icon-eye"));
          const eye = screen.getAllByTestId("icon-eye");
 
          const firstEye = eye[0];
@@ -54,17 +53,13 @@ describe("Given I am connected as an employee", () => {
 
    describe("When I am on Bills page, I click on the button New Bill", () => {
       test("Then, should render the Add a New Bill Page", async () => {
-         await waitFor(() => screen.getByTestId("btn-new-bill"));
          const btn = screen.getByTestId("btn-new-bill");
          userEvent.click(btn);
          expect(await screen.findByText("Envoyer une note de frais")).toBeTruthy();
       });
       test("Then mail icon in vertical layout should be highlighted", async () => {
-         document.location = "/#employee/bill/new";
-         await router();
-         await waitFor(() => screen.getByTestId("icon-mail"));
-         const windowIcon = screen.getByTestId("icon-mail");
-         expect(windowIcon.classList.contains("active-icon")).toBe(true);
+         const mailIcon = screen.getByTestId("icon-mail");
+         await expect(mailIcon.classList.contains("active-icon")).toBe(true);
       });
    });
 });
@@ -73,9 +68,19 @@ describe("Given I am connected as an employee", () => {
 describe("Given I am a user connected as an employee", () => {
    describe("WWhen I am on Bills page", () => {
       test("Then fetches bills from mock API GET", async () => {
+         jest.spyOn(mockStore, "bills");
+         Object.defineProperty(window, "localStorage", { value: localStorageMock });
+         window.localStorage.setItem(
+            "user",
+            JSON.stringify({
+               type: "Employee",
+               email: "employee@test.tld",
+               status: "connected",
+            })
+         );
          const root = document.createElement("div");
          root.setAttribute("id", "root");
-         document.body.append(root);
+         document.body.appendChild(root);
          router();
          window.onNavigate(ROUTES_PATH.Bills);
 
@@ -88,6 +93,7 @@ describe("Given I am a user connected as an employee", () => {
             expect(screen.findByText("Mes notes de frais")).toBeTruthy();
          });
       });
+
       describe("When an error occurs on API", () => {
          beforeEach(() => {
             jest.spyOn(mockStore, "bills");
@@ -104,6 +110,9 @@ describe("Given I am a user connected as an employee", () => {
             root.setAttribute("id", "root");
             document.body.appendChild(root);
             router();
+         });
+         afterEach(() => {
+            jest.clearAllMocks();
          });
          test("Then fetches bills from an API and fails with 404 message error", async () => {
             mockStore.bills.mockImplementationOnce(() => {
