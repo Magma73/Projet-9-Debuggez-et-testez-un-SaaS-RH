@@ -5,15 +5,11 @@
 import "@testing-library/jest-dom";
 import { screen, fireEvent } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
-// import NewBillUI from "../views/NewBillUI.js";
 import NewBill from "../containers/NewBill.js";
-// import { bills } from "../fixtures/bills.js";
 import { ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
-// import { setLocalStorage } from "../../setup-jest";
 import store from "../__mocks__/store.js";
 import mockStore from "../__mocks__/store";
-// import Store from "../app/Store.js";
 
 import router from "../app/Router.js";
 

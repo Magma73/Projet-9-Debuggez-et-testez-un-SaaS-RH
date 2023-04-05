@@ -1,12 +1,9 @@
 /**
  * @jest-environment jsdom
  */
-// debugger;
-
+import '@testing-library/jest-dom'
 import { screen, waitFor } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
-import BillsUI from "../views/BillsUI.js";
-// import Bills from "../containers/Bills.js";
 import { ROUTES_PATH } from "../constants/routes";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store";
@@ -68,7 +65,6 @@ describe("Given I am connected as an employee", () => {
 describe("Given I am a user connected as an employee", () => {
    describe("WWhen I am on Bills page", () => {
       test("Then fetches bills from mock API GET", async () => {
-         jest.spyOn(mockStore, "bills");
          Object.defineProperty(window, "localStorage", { value: localStorageMock });
          window.localStorage.setItem(
             "user",
