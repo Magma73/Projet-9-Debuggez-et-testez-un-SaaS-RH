@@ -27,21 +27,21 @@ beforeAll(() => {
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on New Bill Page", () => {
-    test("Then title should appear", async () => {
+    test("Then title should appear", () => {
       expect(screen.findByText("Envoyer une note de frais")).toBeTruthy()
     })
 
-    test("Then mail icon in vertical layout should be highlighted", async () => {
+    test("Then mail icon in vertical layout should be highlighted", () => {
       const windowIcon = screen.getByTestId('icon-mail')
       expect(windowIcon.classList.contains('active-icon')).toBe(true)
     })
 
-    test("Then all the inputs are displayed", async () => {
+    test("Then all the inputs are displayed", () => {
       const form = document.querySelector("form")
       expect(form.length).toEqual(9)
     })
 
-    test("Then the submit button is displayed", async () => {
+    test("Then the submit button is displayed", () => {
       expect(screen.findByText("Envoyer")).toBeTruthy()
     })
   })
