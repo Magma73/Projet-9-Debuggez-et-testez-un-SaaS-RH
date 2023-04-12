@@ -110,8 +110,6 @@ describe("Given I am connected as an employee", () => {
          });
          await expect(handleChangeFile).toHaveBeenCalledTimes(1);
          await expect(inputFile.validationMessage).not.toBe("Formats acceptés : jpg, jpeg et png");
-         //    const form = screen.getByTestId("form-new-bill")
-         //   expect(form).toBeInvalid()
       });
    });
 

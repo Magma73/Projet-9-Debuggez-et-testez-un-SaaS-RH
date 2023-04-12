@@ -35,7 +35,7 @@ afterEach(() => {
 
 describe("Given I am connected as an employee", () => {
    describe("When I am on Bills page, I click on the icon eye", () => {
-      test("Then a modal should appear", async () => {
+      test("Then a modal should appear and the image is rended", async () => {
          const billUrl = "https://test.storage.tld/v0/b/billable-677b6.a…dur.png?alt=media&token=571d34cb-9c8f-430a-af52-66221cae1da3"
          const iconEye = screen.getAllByTestId("icon-eye");
          const secondEye = iconEye[1];
