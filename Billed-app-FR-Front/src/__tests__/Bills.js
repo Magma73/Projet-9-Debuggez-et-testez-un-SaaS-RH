@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import '@testing-library/jest-dom'
+import "@testing-library/jest-dom";
 import { screen, waitFor } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 import { ROUTES_PATH } from "../constants/routes";
@@ -36,15 +36,22 @@ afterEach(() => {
 describe("Given I am connected as an employee", () => {
    describe("When I am on Bills page, I click on the icon eye", () => {
       test("Then a modal should appear", async () => {
-         const eye = screen.getAllByTestId("icon-eye");
-
-         const firstEye = eye[0];
-         $.fn.modal = jest.fn();
-
-         userEvent.click(firstEye);
+         const billUrl = "https://test.storage.tld/v0/b/billable-677b6.a…dur.png?alt=media&token=571d34cb-9c8f-430a-af52-66221cae1da3"
+         const iconEye = screen.getAllByTestId("icon-eye");
+         const secondEye = iconEye[1];
 
          const dialog = await screen.findByRole("dialog", { hidden: true });
-         expect(dialog).toBeTruthy();
+
+         $.fn.modal = jest.fn();
+
+         userEvent.click(secondEye);
+
+         const img = screen.getByAltText("Bill");
+
+         expect(dialog).toBeInTheDocument();
+         expect($.fn.modal).toHaveBeenCalledWith("show");
+         expect(img).toBeInTheDocument();
+         expect(img).toHaveAttribute("src", billUrl);
       });
    });
 
@@ -80,7 +87,7 @@ describe("Given I am a user connected as an employee", () => {
          router();
          window.onNavigate(ROUTES_PATH.Bills);
 
-         const dataMocked = jest.spyOn(mockStore.bills(), "list")
+         const dataMocked = jest.spyOn(mockStore.bills(), "list");
          mockStore.bills().list();
 
          await waitFor(() => {
